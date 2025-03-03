@@ -55,17 +55,23 @@ const SPECIAL_FOOD_TYPES = {
             scoreElement.textContent = score;
         }
     },
-    CONTROL_REVERSAL: {
+    MEGA_POINTS: {
         color: '#e74c3c',
-        duration: 7000,
+        duration: 0,
         probability: 0.2,
         effect: () => {
-            controlsReversed = true;
-            // Store the timeout to clear it if needed
-            currentControlTimeout = setTimeout(() => {
-                controlsReversed = false;
-                currentControlTimeout = null;
-            }, 7000);
+            score += 100;
+            scoreElement.textContent = score;
+        }
+    },
+    TAIL_REDUCTION: {
+        color: '#3498db',
+        duration: 0,
+        probability: 0.2,
+        effect: () => {
+            if (snake.length > 6) { // Only reduce if snake is longer than 6 segments
+                snake = snake.slice(0, snake.length - 5); // Remove last 5 segments
+            }
         }
     }
 };
@@ -121,7 +127,7 @@ const foodSound = document.getElementById('foodSound');
 const gameOverSound = document.getElementById('gameOverSound');
 const soundToggle = document.getElementById('soundToggle');
 
-let isSoundOn = false; // Start with sound off
+let isSoundOn = true; // Start with sound on
 let isGameOver = false; // Renamed from gameOver to isGameOver
 
 // Error handling for audio loading
@@ -581,4 +587,17 @@ function actuallyRestartGame() {
 // Start game
 console.log('Starting game...');
 generateFood();
-gameLoop = setInterval(drawGame, gameSpeed); 
+gameLoop = setInterval(drawGame, gameSpeed);
+
+// Update sound toggle initialization
+if (soundToggle) {
+    soundToggle.textContent = '🔊 Sound: ON';
+    soundToggle.classList.remove('muted');
+}
+
+// Start background music immediately when game starts
+try {
+    backgroundMusic.play();
+} catch (error) {
+    console.log('Error playing background music:', error);
+} 

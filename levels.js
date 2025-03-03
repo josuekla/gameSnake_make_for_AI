@@ -62,26 +62,20 @@ const foodSound = document.getElementById('foodSound');
 const gameOverSound = document.getElementById('gameOverSound');
 const levelUpSound = document.getElementById('levelUpSound');
 const soundToggle = document.getElementById('soundToggle');
-let isSoundOn = false;
+let isSoundOn = true;
 
-// Sound controls
-soundToggle.addEventListener('click', () => {
-    isSoundOn = !isSoundOn;
-    soundToggle.textContent = `🔊 Sound: ${isSoundOn ? 'ON' : 'OFF'}`;
-    soundToggle.classList.toggle('muted');
-    
-    if (isSoundOn) {
-        if (!isGameOver) {
-            try {
-                backgroundMusic.play();
-            } catch (error) {
-                console.log('Error playing background music:', error);
-            }
-        }
-    } else {
-        backgroundMusic.pause();
-    }
-});
+// Update sound toggle initialization
+if (soundToggle) {
+    soundToggle.textContent = '🔊 Sound: ON';
+    soundToggle.classList.remove('muted');
+}
+
+// Start background music immediately when game starts
+try {
+    backgroundMusic.play();
+} catch (error) {
+    console.log('Error playing background music:', error);
+}
 
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
