@@ -2,11 +2,16 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
 const debugElement = document.getElementById('debug');
+const timerElement = document.getElementById('timer');
 
 // Game constants
 const DEFAULT_GAME_SPEED = 100;
 const MIN_GAME_SPEED = 50;
 const SPEED_BOOST_REDUCTION = 30;
+
+// Timer variables
+let startTime = 0;
+let timerInterval = null;
 
 // Enable debug mode
 const DEBUG = true;
@@ -177,6 +182,29 @@ console.log('Canvas size:', canvas.width, 'x', canvas.height);
 console.log('Grid size:', gridSize);
 console.log('Tile count:', tileCount);
 
+function updateTimer() {
+    if (!isGameOver) {
+        const currentTime = Date.now();
+        const elapsedTime = Math.floor((currentTime - startTime) / 1000); // Convert to seconds
+        const minutes = Math.floor(elapsedTime / 60);
+        const seconds = elapsedTime % 60;
+        timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+}
+
+function startTimer() {
+    startTime = Date.now();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
 document.addEventListener('keydown', (e) => {
     if (isGameOver && e.code !== 'Space') {
         return;
@@ -206,6 +234,10 @@ document.addEventListener('keydown', (e) => {
 
     // Only update direction if a valid move was made
     if (tempDx !== 0 || tempDy !== 0) {
+        // Start timer on first movement
+        if (dx === 0 && dy === 0) {
+            startTimer();
+        }
         // Apply control reversal if active
         if (controlsReversed) {
             dx = -tempDx;
@@ -406,6 +438,7 @@ function checkSnakeCollision() {
 function handleGameOver() {
     isGameOver = true;
     clearInterval(gameLoop); // Stop the game loop
+    stopTimer(); // Stop the timer
     clearAllEffects(); // Clear all active effects
     backgroundMusic.pause();
     playSound(gameOverSound);
@@ -549,6 +582,7 @@ function actuallyRestartGame() {
     gameSpeed = DEFAULT_GAME_SPEED; // Reset to default speed
     controlsReversed = false;
     specialFood = null;
+    timerElement.textContent = '0:00'; // Reset timer display
     
     // Clear all timeouts and effects
     clearAllEffects();
