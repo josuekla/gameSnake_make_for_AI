@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game - Classic Mode</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #34495e;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            background-color: #1a1a1a;
+            border: 3px solid #ecf0f1;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            margin: 20px;
+        }
+        .score {
+            color: #ecf0f1;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        .sound-btn {
+            background: #3498db;
+        }
+        .sound-btn.muted {
+            background: #95a5a6;
+        }
+        .instructions {
+            color: #ecf0f1;
+            margin-top: 20px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 400px;
+        }
+        .instructions p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        #debug {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            display: none;
+        }
+        .special-foods-info {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: #ecf0f1;
+            max-width: 250px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .special-food-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .special-food-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+        .special-food-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .special-food-text {
+            flex: 1;
+        }
+        .special-food-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .special-food-effect {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .info-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="debug">Debug Info</div>
+    <div class="score">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
+    <!-- Audio elements with preload="none" to prevent immediate loading -->
+    <audio id="backgroundMusic" loop preload="none">
+        <source src="audio/background.mp3" type="audio/mp3">
+    </audio>
+    <audio id="foodSound" preload="none">
+        <source src="audio/food.mp3" type="audio/mp3">
+    </audio>
+    <audio id="gameOverSound" preload="none">
+        <source src="audio/gameover.mp3" type="audio/mp3">
+    </audio>
+    
+    <div class="controls">
+        <button id="soundToggle" class="sound-btn button muted">🔊 Sound: OFF</button>
+        <a href="index.html" class="button">Back to Menu</a>
+    </div>
+    
+    <div class="instructions">
+        <p>Use arrow keys to control the snake</p>
+        <p>Collect the red food to grow and increase your score</p>
+        <p>Don't hit the walls or yourself!</p>
+    </div>
+
+    <div class="special-foods-info">
+        <div class="info-title">✨ Special Foods ✨</div>
+        <div class="special-food-item" style="border-left: 4px solid #f1c40f">
+            <div class="special-food-icon">⚡</div>
+            <div class="special-food-text">
+                <div class="special-food-name">Speed Boost</div>
+                <div class="special-food-effect">Increases snake speed for 5 seconds</div>
+            </div>
+        </div>
+        <div class="special-food-item" style="border-left: 4px solid #9b59b6">
+            <div class="special-food-icon">🔄</div>
+            <div class="special-food-text">
+                <div class="special-food-name">Growth Bonus</div>
+                <div class="special-food-effect">Instantly adds 3 segments</div>
+            </div>
+        </div>
+        <div class="special-food-item" style="border-left: 4px solid #e67e22">
+            <div class="special-food-icon">⭐</div>
+            <div class="special-food-text">
+                <div class="special-food-name">Extra Points</div>
+                <div class="special-food-effect">Awards 50 bonus points</div>
+            </div>
+        </div>
+        <div class="special-food-item" style="border-left: 4px solid #e74c3c">
+            <div class="special-food-icon">🔄</div>
+            <div class="special-food-text">
+                <div class="special-food-name">Control Reversal</div>
+                <div class="special-food-effect">Reverses controls for 7 seconds</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html> 

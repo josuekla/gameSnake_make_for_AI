@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game - Level Mode</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #34495e;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            background-color: #1a1a1a;
+            border: 3px solid #ecf0f1;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            margin: 20px;
+        }
+        .score {
+            color: #ecf0f1;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .level-info {
+            color: #ecf0f1;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        .sound-btn {
+            background: #3498db;
+        }
+        .sound-btn.muted {
+            background: #95a5a6;
+        }
+        .level-objectives {
+            color: #ecf0f1;
+            margin-top: 20px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 400px;
+        }
+        .level-objectives h2 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+        }
+        .level-objectives p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        #debug {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug">Debug Info</div>
+    <div class="level-info">Level: <span id="level">1</span></div>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
+    <!-- Audio elements -->
+    <audio id="backgroundMusic" loop preload="none">
+        <source src="audio/background.mp3" type="audio/mp3">
+    </audio>
+    <audio id="foodSound" preload="none">
+        <source src="audio/food.mp3" type="audio/mp3">
+    </audio>
+    <audio id="gameOverSound" preload="none">
+        <source src="audio/gameover.mp3" type="audio/mp3">
+    </audio>
+    <audio id="levelUpSound" preload="none">
+        <source src="audio/levelup.mp3" type="audio/mp3">
+    </audio>
+    
+    <div class="controls">
+        <button id="soundToggle" class="sound-btn button muted">🔊 Sound: OFF</button>
+        <a href="index.html" class="button">Back to Menu</a>
+    </div>
+    
+    <div class="level-objectives">
+        <h2>Level Objectives</h2>
+        <p id="objective">Collect 5 food items to advance to the next level</p>
+        <p>Each level introduces new challenges:</p>
+        <p>• Increased speed</p>
+        <p>• More obstacles</p>
+        <p>• Special level-specific goals</p>
+    </div>
+
+    <script src="levels.js"></script>
+</body>
+</html> 
